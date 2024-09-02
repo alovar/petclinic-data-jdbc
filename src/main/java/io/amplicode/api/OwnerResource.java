@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/owners")
@@ -31,9 +30,9 @@ public class OwnerResource {
     private final OwnerMapper ownerMapper;
 
     @GetMapping
-    public List<OwnerDto> getList1(@ModelAttribute OwnerFilter filter) {
-        Iterable<Owner> owners = ownerRepository.findAll(filter); // todo iterable or list?
-        return StreamSupport.stream(owners.spliterator(), false)
+    public List<OwnerDto> getList(@ModelAttribute OwnerFilter filter) {
+        List<Owner> owners = ownerRepository.findAll(filter);
+        return owners.stream()
                 .map(ownerMapper::toDto)
                 .toList();
     }

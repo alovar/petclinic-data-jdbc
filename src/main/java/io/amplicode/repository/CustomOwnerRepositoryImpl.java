@@ -11,6 +11,9 @@ import org.springframework.data.relational.core.query.Query;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+import java.util.stream.StreamSupport;
+
 import static org.springframework.data.relational.core.query.Criteria.where;
 
 @RequiredArgsConstructor
@@ -18,11 +21,12 @@ public class CustomOwnerRepositoryImpl implements CustomOwnerRepository {
 
     private final JdbcAggregateOperations jdbcAggregateOperations;
 
-    @Transactional(readOnly = true) // todo check in interface
+    @Transactional(readOnly = true)
     @Override
-    public Iterable<Owner> findAll(OwnerFilter filter) {
+    public List<Owner> findAll(OwnerFilter filter) {
         Query query = toQuery(filter);
-        return jdbcAggregateOperations.findAll(query, Owner.class); // todo convert to list
+        return StreamSupport.stream(jdbcAggregateOperations.findAll(query, Owner.class).spliterator(), false)
+                .toList();
     }
 
     @Transactional(readOnly = true)

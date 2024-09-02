@@ -5,8 +5,10 @@ import io.amplicode.model.Owner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface CustomOwnerRepository {
-    Iterable<Owner> findAll(OwnerFilter filter);
+    List<Owner> findAll(OwnerFilter filter);
 
     Page<Owner> findAll(OwnerFilter filter, Pageable pageable);
 }
