@@ -1,4 +1,4 @@
 package io.amplicode.api.dto;
 
-public record OwnerFilter(String telephone, String address, String city) {
+public record OwnerFilter(String address, String city, String telephone) {
 }

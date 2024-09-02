@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jdbc.core.JdbcAggregateOperations;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import static org.springframework.data.relational.core.query.Criteria.where;
@@ -17,12 +18,14 @@ public class CustomOwnerRepositoryImpl implements CustomOwnerRepository {
 
     private final JdbcAggregateOperations jdbcAggregateOperations;
 
+    @Transactional(readOnly = true) // todo check in interface
     @Override
     public Iterable<Owner> findAll(OwnerFilter filter) {
         Query query = toQuery(filter);
-        return jdbcAggregateOperations.findAll(query, Owner.class);
+        return jdbcAggregateOperations.findAll(query, Owner.class); // todo convert to list
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<Owner> findAll(OwnerFilter filter, Pageable pageable) {
         Query query = toQuery(filter);
@@ -35,16 +38,16 @@ public class CustomOwnerRepositoryImpl implements CustomOwnerRepository {
         if (StringUtils.hasText(address)) {
             String addressExpr = "%" + address + "%";
             criteria = criteria.and(
-                    where(Owner.Fields.address).like(addressExpr).ignoreCase(true)
+                    where("address").like(addressExpr).ignoreCase(true)
             );
         }
         String city = filter.city();
         if (StringUtils.hasText(city)) {
-            criteria = criteria.and(Owner.Fields.city).like("%" + city + "%").ignoreCase(true);
+            criteria = criteria.and("city").like("%" + city + "%").ignoreCase(true);
         }
         String telephone = filter.telephone();
         if (StringUtils.hasText(telephone)) {
-            criteria = criteria.and(Owner.Fields.telephone).is(telephone);
+            criteria = criteria.and("telephone").is(telephone);
         }
         return Query.query(criteria);
     }
