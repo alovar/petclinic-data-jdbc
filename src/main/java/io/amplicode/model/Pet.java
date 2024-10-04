@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
@@ -25,6 +26,8 @@ public class Pet extends NamedEntity {
 
     @MappedCollection(idColumn = "id")
     private Set<Visit> visits = new LinkedHashSet<>();
+
+    AggregateReference<PetType, Long> petTypeId;
 
     public static class PetFields extends Fields {}
 }
