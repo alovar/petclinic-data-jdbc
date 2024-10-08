@@ -3,7 +3,6 @@ package io.amplicode.model;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
-import org.springframework.core.annotation.Order;
 import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
@@ -27,7 +26,7 @@ public class Pet extends NamedEntity {
     @MappedCollection(idColumn = "id")
     private Set<Visit> visits = new LinkedHashSet<>();
 
-    AggregateReference<PetType, Long> petTypeId;
+    AggregateReference<PetType, Long> typeId;
 
     public static class PetFields extends Fields {}
 }

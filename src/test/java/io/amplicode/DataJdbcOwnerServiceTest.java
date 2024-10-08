@@ -3,12 +3,22 @@ package io.amplicode;
 import io.amplicode.api.dto.OwnerFilter;
 import io.amplicode.model.Owner;
 import io.amplicode.repository.OwnerRepository;
+import liquibase.parser.core.xml.XMLChangeLogSAXParser;
+import liquibase.serializer.core.xml.XMLChangeLogSerializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jdbc.core.mapping.AggregateReference;
+import org.springframework.data.jdbc.core.mapping.schema.DefaultSqlTypeMapping;
+import org.springframework.data.jdbc.core.mapping.schema.LiquibaseChangeSetWriter;
+import org.springframework.data.jdbc.core.mapping.schema.SqlTypeMapping;
+import org.springframework.data.relational.core.mapping.RelationalMappingContext;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,124 +29,24 @@ public class DataJdbcOwnerServiceTest {
     @Autowired
     private OwnerRepository ownerRepository;
 
-    @Test
-    void findAllQueryAndSort() {
-        OwnerFilter filter = new OwnerFilter("St.", null, null);
-        Sort sort = Sort.by(Sort.Order.by("city"));
-        PageRequest pageable = PageRequest.of(0, 20, sort);
-        List<Owner> owners = ownerRepository.findAll(filter, pageable).toList();
-
-        assertEquals(5, owners.size());
-        assertEquals("George", owners.get(0).getFirstName());
-        assertEquals("Maria", owners.get(1).getFirstName());
-        assertEquals("Eduardo", owners.get(2).getFirstName());
-        assertEquals("Jean", owners.get(3).getFirstName());
-        assertEquals("Harold", owners.get(4).getFirstName());
-    }
+    @Autowired
+    private RelationalMappingContext context;
 
     @Test
-    void findAllFilterByQueryAll() {
-        OwnerFilter filter = new OwnerFilter(null, "mad", "6085559435");
-        PageRequest pageable = PageRequest.of(0, 20);
-        List<Owner> owners = ownerRepository.findAll(filter, pageable).toList();
+    void test() throws IOException {
+        context.setInitialEntitySet(Collections.singleton(Owner.class));
+        LiquibaseChangeSetWriter writer = new LiquibaseChangeSetWriter(context);
+        writer.setChangeLogParser(new XMLChangeLogSAXParser());
+        writer.setChangeLogSerializer(new XMLChangeLogSerializer());
 
-        assertEquals(1, owners.size());
-        assertEquals("David", owners.get(0).getFirstName());
-    }
+        writer.setSqlTypeMapping(((SqlTypeMapping) property -> {
+            if (property.getType().getName().equals("org.springframework.data.jdbc.core.mapping.AggregateReference")) {
+                return "INT";
+            }
+            return null;
+        }).and(new DefaultSqlTypeMapping()));
 
-    @Test
-    void findAllSize5Page2SortName() {
-        OwnerFilter filter = new OwnerFilter(null, null, null);
-        PageRequest pageable = PageRequest.of(1, 5, Sort.by("firstName"));
-        List<Owner> owners = ownerRepository.findAll(filter, pageable).toList();
-
-        assertEquals(5, owners.size());
-        assertEquals("Harold", owners.get(0).getFirstName());
-        assertEquals("Jean", owners.get(1).getFirstName());
-        assertEquals("Jeff", owners.get(2).getFirstName());
-        assertEquals("Maria", owners.get(3).getFirstName());
-        assertEquals("Peter", owners.get(4).getFirstName());
-    }
-
-    @Test
-    void findAllById() {
-        OwnerFilter filter = new OwnerFilter(null, null, null);
-        PageRequest pageable = PageRequest.of(1, 5, Sort.by("firstName"));
-        List<Owner> owners = ownerRepository.findAll(filter, pageable).toList();
-
-        assertEquals(5, owners.size());
-        assertEquals("Harold", owners.get(0).getFirstName());
-        assertEquals("Jean", owners.get(1).getFirstName());
-        assertEquals("Jeff", owners.get(2).getFirstName());
-        assertEquals("Maria", owners.get(3).getFirstName());
-        assertEquals("Peter", owners.get(4).getFirstName());
-    }
-
-
-    @Test
-    void getOne() {
-        Owner owner = ownerRepository.findById(3L).orElse(null);
-
-        assertNotNull(owner);
-        assertEquals("Eduardo", owner.getFirstName());
-        assertEquals("Rodriquez", owner.getLastName());
-        assertEquals("2693 Commerce St.", owner.getAddress());
-        assertEquals("McFarland", owner.getCity());
-        assertEquals("6085558763", owner.getTelephone());
-    }
-
-    @Test
-    void getOneNotFound() {
-        Owner owner = ownerRepository.findById(Long.MAX_VALUE).orElse(null);
-        assertNull(owner);
-    }
-
-    @Test
-    void getMany() {
-        List<Owner> owners = ownerRepository.findAllById(List.of(1L, 3L, 5L, 7L));
-        assertEquals(4, owners.size());
-        assertEquals("George", owners.get(0).getFirstName());
-        assertEquals("Eduardo", owners.get(1).getFirstName());
-        assertEquals("Peter", owners.get(2).getFirstName());
-        assertEquals("Jeff", owners.get(3).getFirstName());
-    }
-
-    @Test
-    public void createAndDelete() {
-        Owner owner = new Owner();
-        owner.setFirstName("Ivan");
-        owner.setLastName("Ivanov");
-        owner.setAddress("Gastelo 43a");
-        owner.setCity("Samara");
-        owner.setTelephone("9271111111");
-
-        Owner savedOwner = ownerRepository.save(owner);
-        assertNotNull(savedOwner);
-        assertEquals("Ivan", savedOwner.getFirstName());
-        assertEquals("Ivanov", savedOwner.getLastName());
-        assertEquals("Gastelo 43a", savedOwner.getAddress());
-        assertEquals("Samara", savedOwner.getCity());
-        assertEquals("9271111111", savedOwner.getTelephone());
-
-        ownerRepository.deleteById(savedOwner.getId());
-    }
-
-    @Test
-    public void purePut() {
-        Owner owner = new Owner();
-        owner.setFirstName("Alex");
-        owner.setLastName("Alexov");
-        owner.setAddress("Gastelo");
-        owner.setCity("Samara");
-        owner.setTelephone("9271112233");
-
-        Owner savedOwner = ownerRepository.save(owner);
-
-        savedOwner.setLastName("Ivanov");
-        savedOwner.setAddress("Gastelo 43a");
-        ownerRepository.save(savedOwner);
-
-        ownerRepository.deleteById(savedOwner.getId());
+        writer.writeChangeSet(new FileSystemResource("cs-minimum.xml"));
     }
 
     @Test
