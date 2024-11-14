@@ -9,9 +9,8 @@ import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.time.LocalDate ;
+import java.util.*;
 
 @FieldNameConstants(innerTypeName = "PetFields")
 @Getter
@@ -23,8 +22,8 @@ public class Pet extends NamedEntity {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
-    @MappedCollection(idColumn = "id")
-    private Set<Visit> visits = new LinkedHashSet<>();
+    @MappedCollection(idColumn = "pet_id")
+    private Set<Visit> visits = new HashSet<>();
 
     AggregateReference<PetType, Long> typeId;
 

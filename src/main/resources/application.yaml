@@ -1,15 +1,29 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost/petclinic
-    username: petclinic
-    password: petclinic
+    password: ${POSTGRES_PASS:petclinic}
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost/petclinic}
+    username: ${POSTGRES_USER:petclinic}
     driver-class-name: org.postgresql.Driver
   liquibase:
     enabled: false
     change-log: classpath:/changelog/db.changelog-master.xml
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
   mvc:
     problemdetails:
       enabled: true
+  sql:
+
+    init:
+
+      mode: always
+      data-locations: classpath*:db/${database}/data.sql
+      schema-locations: classpath*:db/${database}/schema.sql
+
+database: postgres
+
+logging:
+  level:
+    org:
+      springframework:
+        jdbc:
+          core: DEBUG
+        jdbc.core.StatementCreatorUtils: TRACE

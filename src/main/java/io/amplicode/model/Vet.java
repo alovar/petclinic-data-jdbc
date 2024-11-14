@@ -11,10 +11,6 @@ import java.util.Set;
 @Setter
 @Table(name = "vets")
 public class Vet extends Person {
-
-//    @OneToMany
-//    @JoinTable(name = "vet_specialties", joinColumns = @JoinColumn(name = "vet_id"),
-//            inverseJoinColumns = @JoinColumn(name = "specialty_id"))
-    @MappedCollection(idColumn = "id")
-    private Set<Specialty> specialties;
+    @MappedCollection(idColumn = "vet_id", keyColumn = "vet_id")
+    private Set<VetToSpecialty> vetsToSpecialties;
 }

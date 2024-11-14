@@ -1,10 +1,10 @@
 package io.amplicode.repository;
 
-import io.amplicode.model.Pet;
+import io.amplicode.model.Vet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.ListCrudRepository;
 
-public interface PetRepository extends ListCrudRepository<Pet, Long> {
-    Page<Pet> findAll(Pageable pageable);
+public interface VetRepository extends ListCrudRepository<Vet, Long> {
+    Page<Vet> findAll(Pageable pageable);
 }

@@ -20,4 +20,8 @@ public class Visit extends BaseEntity {
 
     @NotBlank
     private String description;
+
+    @Column("pet_id")
+    private Integer pet5;
+
 }

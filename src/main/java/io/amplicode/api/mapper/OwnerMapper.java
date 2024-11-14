@@ -2,19 +2,16 @@ package io.amplicode.api.mapper;
 
 import io.amplicode.api.dto.OwnerDto;
 import io.amplicode.model.Owner;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface OwnerMapper {
-
     Owner toEntity(OwnerDto ownerDto);
 
-    OwnerDto toDto(Owner owner);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Owner partialUpdate(OwnerDto ownerDto, @MappingTarget Owner owner);
+    OwnerDto toOwnerDto(Owner owner);
 
     Owner updateWithNull(OwnerDto ownerDto, @MappingTarget Owner owner);
-
-    OwnerDto toOwnerDto(Owner owner);
 }

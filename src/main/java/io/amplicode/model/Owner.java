@@ -5,12 +5,15 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
-import org.springframework.data.jdbc.core.mapping.AggregateReference;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.annotation.Version;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Embedded;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -28,9 +31,6 @@ public class Owner extends Person {
     @Digits(fraction = 0, integer = 10)
     private String telephone;
 
-    @MappedCollection(idColumn = "id", keyColumn = "owner_id")
-    private List<Pet> pets = new ArrayList<>();
-
-    public static class Fields extends NamedEntity.Fields {
-    }
+    @MappedCollection(idColumn = "owner_id")
+    private Set<Pet> pets = new HashSet<>();
 }
