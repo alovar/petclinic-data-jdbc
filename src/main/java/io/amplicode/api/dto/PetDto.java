@@ -14,4 +14,5 @@ public class PetDto {
     String name;
     LocalDate birthDate;
     Set<VisitDto> visits;
+    PetDeepInfo.PetTypeInfo typeId;
 }

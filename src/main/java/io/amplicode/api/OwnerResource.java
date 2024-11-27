@@ -1,6 +1,5 @@
 package io.amplicode.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.amplicode.api.dto.OwnerDto;
 import io.amplicode.api.dto.OwnerFilter;
 import io.amplicode.api.mapper.OwnerMapper;
@@ -23,7 +22,6 @@ import java.util.Optional;
 public class OwnerResource {
 
     private final OwnerRepository ownerRepository;
-    private final ObjectMapper objectMapper;
     private final OwnerMapper ownerMapper;
 
     @GetMapping

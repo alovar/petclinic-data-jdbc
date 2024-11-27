@@ -11,9 +11,7 @@ spring:
     problemdetails:
       enabled: true
   sql:
-
     init:
-
       mode: always
       data-locations: classpath*:db/${database}/data.sql
       schema-locations: classpath*:db/${database}/schema.sql
