@@ -9,4 +9,6 @@ import org.springframework.data.relational.core.mapping.Table;
 @Setter
 @Table(name = "vet_specialties")
 public class VetToSpecialty {
+    private AggregateReference<Vet, Long> vetId;
+    private AggregateReference<Specialty, Long> specialtyId;
 }
